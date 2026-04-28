@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { jwtDecode } from "jwt-decode"; // ✅ NEW
+import { jwtDecode } from "jwt-decode";
 
 const API = "http://localhost:5000/api";
 
@@ -9,7 +9,7 @@ export default function Layout({ children }) {
   const [notifications, setNotifications] = useState([]);
   const location = useLocation();
 
-  // 🔥 DECODE USER FROM TOKEN
+  // 🔥 TOKEN
   const token = localStorage.getItem("token");
 
   let role = "User";
@@ -19,10 +19,13 @@ export default function Layout({ children }) {
     try {
       const decoded = jwtDecode(token);
 
+      // ✅ FULL CORRECT ROLE MAP
       const roleMap = {
         1: "Admin",
         2: "Farmer",
-        3: "Distributor",
+        3: "Processor",
+        4: "Distributor",
+        5: "Retailer",
       };
 
       role = roleMap[decoded.role_id] || "User";
@@ -33,7 +36,7 @@ export default function Layout({ children }) {
     }
   }
 
-  // 🔥 FETCH REAL NOTIFICATIONS
+  // 🔔 FETCH NOTIFICATIONS
   const fetchNotifications = async () => {
     try {
       const res = await fetch(`${API}/notifications`, {
@@ -99,9 +102,15 @@ export default function Layout({ children }) {
         {/* FOOTER */}
         <div className="mt-10 p-4 bg-white/10 backdrop-blur-md rounded-xl border border-white/10">
           <p className="text-sm text-gray-300">Signed in as</p>
-          <p className="text-green-400 font-semibold">{role}</p>
+
+          <p className="text-green-400 font-semibold">
+            {role}
+          </p>
+
           {email && (
-            <p className="text-xs text-gray-400 mt-1">{email}</p>
+            <p className="text-xs text-gray-400 mt-1">
+              {email}
+            </p>
           )}
         </div>
       </div>
@@ -114,7 +123,7 @@ export default function Layout({ children }) {
           <button
             onClick={() => {
               setOpen(!open);
-              fetchNotifications(); // ✅ refresh on click
+              fetchNotifications();
             }}
             className="bg-white/10 backdrop-blur-md p-2 rounded-full hover:bg-white/20 transition"
           >
@@ -140,7 +149,6 @@ export default function Layout({ children }) {
                 ))
               )}
 
-              {/* VIEW ALL */}
               <Link
                 to="/notifications"
                 className="block text-center text-green-400 text-sm mt-2 hover:underline"

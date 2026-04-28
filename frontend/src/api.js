@@ -1,6 +1,6 @@
 const API = "http://localhost:5000/api";
 
-// Helper to get token
+// 🔥 Helper to get token
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
 
@@ -10,48 +10,69 @@ const getAuthHeaders = () => {
   };
 };
 
-// PRODUCTS
-export const getProducts = () =>
-  fetch(`${API}/products`, {
+// ================= PRODUCTS =================
+export const getProducts = async () => {
+  const res = await fetch(`${API}/products`, {
     headers: getAuthHeaders(),
-  }).then(res => res.json());
+  });
 
-export const createProduct = (data) =>
-  fetch(`${API}/products`, {
+  return res.json();
+};
+
+export const createProduct = async (data) => {
+  const res = await fetch(`${API}/products`, {
     method: "POST",
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
 
-// LOCATIONS
-export const getLocations = () =>
-  fetch(`${API}/locations`, {
-    headers: getAuthHeaders(),
-  }).then(res => res.json());
+  return res.json(); // 🔥 IMPORTANT
+};
 
-export const createLocation = (data) =>
-  fetch(`${API}/locations`, {
+// ================= LOCATIONS =================
+export const getLocations = async () => {
+  const res = await fetch(`${API}/locations`, {
+    headers: getAuthHeaders(),
+  });
+
+  return res.json();
+};
+
+export const createLocation = async (data) => {
+  const res = await fetch(`${API}/locations`, {
     method: "POST",
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
 
-// BATCHES
-export const createBatch = (data) =>
-  fetch(`${API}/batches`, {
+  return res.json();
+};
+
+// ================= BATCHES =================
+export const createBatch = async (data) => {
+  const res = await fetch(`${API}/batches`, {
     method: "POST",
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
 
-// LOGS
-export const getLogs = () =>
-  fetch(`${API}/logs`, {
-    headers: getAuthHeaders(),
-  }).then(res => res.json());
+  return res.json();
+};
 
-// REPORTS
-export const getReports = () =>
-  fetch(`${API}/reports`, {
+// ================= LOGS =================
+export const getLogs = async () => {
+  const res = await fetch(`${API}/logs`, {
     headers: getAuthHeaders(),
-  }).then(res => res.json());
+  });
+
+  return res.json();
+};
+
+// ================= REPORTS =================
+export const getReports = async () => {
+  const res = await fetch(`${API}/reports`, {
+    headers: getAuthHeaders(),
+  });
+
+  return res.json();
+};

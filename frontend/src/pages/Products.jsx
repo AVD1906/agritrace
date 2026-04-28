@@ -5,21 +5,25 @@ export default function Products() {
   const [products, setProducts] = useState([]);
   const [form, setForm] = useState({ name: "", category: "" });
 
-  // 🔥 Fetch products
+  // ================= FETCH =================
   const fetchProducts = async () => {
     try {
       const data = await getProducts();
+      console.log("PRODUCTS:", data);
 
-      // Normalize backend field
-      const formatted = (data || []).map((p) => ({
-        ...p,
-        name: p.name || p.product_name,
+      const list = Array.isArray(data) ? data : [];
+
+      const formatted = list.map((p) => ({
+        id: p.product_id,
+        name: p.product_name,
+        category: p.category,
       }));
 
       setProducts(formatted);
+
     } catch (err) {
       console.error("Error fetching products:", err);
-      alert("Failed to load products");
+      setProducts([]);
     }
   };
 
@@ -27,15 +31,25 @@ export default function Products() {
     fetchProducts();
   }, []);
 
-  // 🔥 Add product
+  // ================= ADD =================
   const addProduct = async () => {
+    if (!form.name || !form.category) {
+      alert("Fill all fields");
+      return;
+    }
+
     try {
-      await createProduct(form);
+      const res = await createProduct({
+        name: form.name,
+        category: form.category,
+      });
+
+      console.log("ADD PRODUCT:", res);
 
       setForm({ name: "", category: "" });
 
-      // refresh list
-      fetchProducts();
+      await fetchProducts(); // 🔥 refresh
+
     } catch (err) {
       console.error("Error adding product:", err);
       alert("Failed to add product");
@@ -48,6 +62,7 @@ export default function Products() {
 
       {/* FORM */}
       <div className="bg-white/10 p-4 rounded grid md:grid-cols-3 gap-3">
+
         <input
           placeholder="Name"
           value={form.name}
@@ -75,10 +90,7 @@ export default function Products() {
         <p>No products found</p>
       ) : (
         products.map((p) => (
-          <div
-            key={p.product_id || p.id}
-            className="bg-white/10 p-3 rounded"
-          >
+          <div key={p.id} className="bg-white/10 p-3 rounded">
             {p.name} ({p.category})
           </div>
         ))

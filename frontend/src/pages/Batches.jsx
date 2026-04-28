@@ -12,31 +12,31 @@ export default function Batches() {
     product_id: "",
     quantity: "",
     location_id: "",
-    status: "Pending",
     date: "",
   });
 
-  // 🔥 FETCH DATA
+  // ================= FETCH DATA =================
   const fetchData = async () => {
     try {
       const token = localStorage.getItem("token");
 
+      // PRODUCTS
       const p = await getProducts();
       const formattedProducts = (p || []).map((item) => ({
-        ...item,
         id: item.product_id,
-        name: item.name || item.product_name,
+        name: item.product_name || item.name,
       }));
       setProducts(formattedProducts);
 
+      // LOCATIONS
       const l = await getLocations();
       const formattedLocations = (l || []).map((item) => ({
-        ...item,
         id: item.location_id,
         name: item.name,
       }));
       setLocations(formattedLocations);
 
+      // BATCHES
       const res = await fetch(`${API}/batches`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -45,10 +45,13 @@ export default function Batches() {
 
       const b = await res.json();
 
-      if (Array.isArray(b)) setBatches(b);
-      else if (Array.isArray(b.data)) setBatches(b.data);
-      else if (Array.isArray(b.batches)) setBatches(b.batches);
-      else setBatches([]);
+      const list = Array.isArray(b)
+        ? b
+        : Array.isArray(b?.data)
+        ? b.data
+        : [];
+
+      setBatches(list);
 
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -60,32 +63,38 @@ export default function Batches() {
     fetchData();
   }, []);
 
-  // 🔥 ADD BATCH
+  // ================= ADD BATCH =================
   const addBatch = async () => {
-    if (!form.product_id || !form.quantity || !form.location_id) {
+    if (!form.product_id || !form.quantity || !form.location_id || !form.date) {
       alert("Fill all required fields");
       return;
     }
 
     try {
-      await createBatch(form);
+      await createBatch({
+        product_id: Number(form.product_id),
+        quantity: Number(form.quantity),
+        location_id: Number(form.location_id),
+        date: form.date, // 🔥 mapped to harvest_date in backend
+      });
 
+      // reset form
       setForm({
         product_id: "",
         quantity: "",
         location_id: "",
-        status: "Pending",
         date: "",
       });
 
-      fetchData();
+      await fetchData(); // 🔥 refresh UI
+
     } catch (err) {
       console.error("Error adding batch:", err);
       alert("Failed to add batch");
     }
   };
 
-  // 🔥 VERIFY BATCH
+  // ================= VERIFY =================
   const verifyBatch = async (id) => {
     try {
       const token = localStorage.getItem("token");
@@ -97,7 +106,8 @@ export default function Batches() {
         },
       });
 
-      fetchData(); // refresh UI
+      await fetchData(); // 🔥 refresh
+
     } catch (err) {
       console.error("Verify error:", err);
     }
@@ -111,9 +121,10 @@ export default function Batches() {
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">Batches</h1>
 
-      {/* FORM */}
-      <div className="bg-white/10 p-4 rounded grid md:grid-cols-6 gap-3">
+      {/* ================= FORM ================= */}
+      <div className="bg-white/10 p-4 rounded grid md:grid-cols-5 gap-3">
 
+        {/* PRODUCT */}
         <select
           value={form.product_id}
           onChange={(e) =>
@@ -129,6 +140,7 @@ export default function Batches() {
           ))}
         </select>
 
+        {/* QUANTITY */}
         <input
           placeholder="Quantity"
           value={form.quantity}
@@ -138,6 +150,7 @@ export default function Batches() {
           className="p-2 bg-white/10 rounded"
         />
 
+        {/* LOCATION */}
         <select
           value={form.location_id}
           onChange={(e) =>
@@ -153,6 +166,7 @@ export default function Batches() {
           ))}
         </select>
 
+        {/* DATE */}
         <input
           type="date"
           value={form.date}
@@ -162,18 +176,7 @@ export default function Batches() {
           className="p-2 bg-white/10 rounded"
         />
 
-        <select
-          value={form.status}
-          onChange={(e) =>
-            setForm({ ...form, status: e.target.value })
-          }
-          className="p-2 bg-white/10 rounded"
-        >
-          <option>Pending</option>
-          <option>Verified</option>
-          <option>Rejected</option>
-        </select>
-
+        {/* ADD BUTTON */}
         <button
           onClick={addBatch}
           className="bg-green-600 hover:bg-green-500 text-white rounded"
@@ -182,11 +185,11 @@ export default function Batches() {
         </button>
       </div>
 
-      {/* LIST */}
+      {/* ================= LIST ================= */}
       <div className="relative pl-6 space-y-6">
         <div className="absolute left-2 top-0 bottom-0 w-[2px] bg-white/20"></div>
 
-        {(Array.isArray(batches) ? batches : []).map((b) => (
+        {batches.map((b) => (
           <div key={b.batch_id} className="relative">
 
             <div className="absolute -left-[10px] top-5 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
@@ -202,7 +205,7 @@ export default function Batches() {
                 {b.location_id && ` | ${getName(locations, b.location_id)}`}
               </p>
 
-              {/* 🔥 STATUS */}
+              {/* STATUS */}
               <p className="text-sm mt-1">
                 Status:{" "}
                 <span
@@ -218,7 +221,7 @@ export default function Batches() {
                 </span>
               </p>
 
-              {/* 🔥 VERIFY BUTTON */}
+              {/* VERIFY BUTTON */}
               {b.status !== "Verified" && (
                 <button
                   onClick={() => verifyBatch(b.batch_id)}
@@ -229,7 +232,7 @@ export default function Batches() {
               )}
 
               <p className="text-xs text-gray-400 mt-1">
-                {b.created_at || b.date || "No date"}
+                {b.harvest_date || b.created_at || "No date"}
               </p>
 
             </div>

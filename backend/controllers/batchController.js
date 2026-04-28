@@ -1,30 +1,37 @@
 const batchModel = require('../models/batchModel');
-const notificationModel = require('../models/notificationModel'); // 🔥 for notifications
+const notificationModel = require('../models/notificationModel');
 
 // ================= CREATE BATCH =================
 exports.createBatch = async (req, res) => {
   try {
-    const { product_id, quantity, harvest_date, expiry_date } = req.body;
+    const { product_id, quantity, location_id, date } = req.body;
+
+    const harvest_date = date; // 🔥 map frontend → backend
+
+    console.log("BODY:", req.body);
 
     // 🔴 VALIDATIONS
     if (!product_id || !quantity || !harvest_date) {
-      return res.status(400).json({ message: 'Missing required fields' });
-    }
-
-    if (quantity <= 0) {
-      return res.status(400).json({ message: 'Quantity must be > 0' });
-    }
-
-    if (expiry_date && expiry_date <= harvest_date) {
       return res.status(400).json({
-        message: 'Expiry date must be after harvest date',
+        message: 'product_id, quantity, and date are required',
       });
     }
 
-    const result = await batchModel.createBatch(req.body);
+    if (quantity <= 0) {
+      return res.status(400).json({
+        message: 'Quantity must be > 0',
+      });
+    }
 
-    // 🔥 CREATE NOTIFICATION
-    console.log("🔥 BATCH CREATED - ADDING NOTIFICATION");
+    const result = await batchModel.createBatch({
+      product_id,
+      quantity,
+      location_id,
+      harvest_date,
+      status: "Pending",
+    });
+
+    // 🔥 NOTIFICATION
     await notificationModel.createNotification(
       req.user.user_id,
       'New batch created'
@@ -41,8 +48,7 @@ exports.createBatch = async (req, res) => {
   }
 };
 
-
-// ================= GET ALL BATCHES =================
+// ================= GET ALL =================
 exports.getAllBatches = async (req, res) => {
   try {
     const batches = await batchModel.getAllBatches();
@@ -53,8 +59,18 @@ exports.getAllBatches = async (req, res) => {
   }
 };
 
+// ================= VERIFY =================
+exports.verifyBatch = async (req, res) => {
+  try {
+    await batchModel.verifyBatch(req.params.id);
+    res.json({ message: 'Batch verified' });
+  } catch (error) {
+    console.error('verifyBatch error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
-// ================= GET BATCHES BY PRODUCT =================
+// ================= OTHERS =================
 exports.getBatchesByProduct = async (req, res) => {
   try {
     const batches = await batchModel.getBatchesByProduct(req.params.productId);
@@ -65,8 +81,6 @@ exports.getBatchesByProduct = async (req, res) => {
   }
 };
 
-
-// ================= GET BATCH BY ID =================
 exports.getBatchById = async (req, res) => {
   try {
     const batch = await batchModel.getBatchById(req.params.id);
@@ -78,18 +92,6 @@ exports.getBatchById = async (req, res) => {
     res.json(batch);
   } catch (error) {
     console.error('getBatchById error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
-// 🔥 VERIFY
-exports.verifyBatch = async (req, res) => {
-  try {
-    await batchModel.verifyBatch(req.params.id);
-
-    res.json({ message: 'Batch verified' });
-  } catch (error) {
-    console.error('verifyBatch error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };

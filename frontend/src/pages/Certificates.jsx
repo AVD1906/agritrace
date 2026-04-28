@@ -21,6 +21,8 @@ export default function Certificates() {
       });
 
       const data = await res.json();
+      console.log("CERTS FROM DB:", data);
+
       setCerts(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
@@ -28,7 +30,7 @@ export default function Certificates() {
     }
   };
 
-  // AUTO LOAD WHEN BATCH CHANGES
+  // AUTO LOAD
   useEffect(() => {
     fetchCertificates();
   }, [batchId]);
@@ -40,18 +42,10 @@ export default function Certificates() {
       return;
     }
 
-    const newCert = {
-      cert_id: Date.now(),
-      batch_id: Number(batchId),
-      issued_by: name.trim(),
-      issue_date: new Date().toISOString().split("T")[0],
-      status: "Valid",
-    };
-
     try {
       const token = localStorage.getItem("token");
 
-      await fetch(`${API}/certifications`, {
+      const res = await fetch(`${API}/certifications`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -63,12 +57,22 @@ export default function Certificates() {
         }),
       });
 
-      // instant UI update
-      setCerts((prev) => [newCert, ...prev]);
+      const data = await res.json();
+      console.log("ADD CERT RESPONSE:", data);
+
+      if (!res.ok) {
+        alert(data.message || "Failed to add certificate");
+        return;
+      }
 
       setName("");
+
+      // 🔥 REAL FIX: reload from DB
+      await fetchCertificates();
+
     } catch (err) {
       console.error(err);
+      alert("Server error");
     }
   };
 
@@ -108,7 +112,6 @@ export default function Certificates() {
         certs.map((c) => (
           <div key={c.cert_id} className="bg-white/10 p-3 rounded">
 
-            {/* 🔥 BULLET POINT DISPLAY */}
             {(c.issued_by || "").split("|").map((item, index) => (
               <p key={index} className="font-semibold">
                 <span className="text-green-400 mr-2">●</span>

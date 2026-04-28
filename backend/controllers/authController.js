@@ -11,11 +11,24 @@ const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // 🔥 Convert role → role_id
-    let role_id = 2; // default = user
+    // 🔥 FULL ROLE MAP (matches your DB exactly)
+    const roleMap = {
+      admin: 1,
+      farmer: 2,
+      processor: 3,
+      distributor: 4,
+      retailer: 5,
+    };
 
-    if (role && role === 'admin') {
-      role_id = 1;
+    // 🔥 normalize role (important)
+    const roleKey = role?.toLowerCase();
+
+    const role_id = roleMap[roleKey];
+
+    if (!role_id) {
+      return res.status(400).json({
+        message: "Invalid role selected",
+      });
     }
 
     // Check if email exists
@@ -59,6 +72,7 @@ const register = async (req, res) => {
         role_id,
       },
     });
+
   } catch (error) {
     console.error('Register error:', error);
     res.status(500).json({
@@ -93,7 +107,6 @@ const login = async (req, res) => {
       });
     }
 
-    // Generate token
     const token = generateToken({
       user_id: user.user_id,
       email: user.email,
@@ -110,6 +123,7 @@ const login = async (req, res) => {
         role_id: user.role_id,
       },
     });
+
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({
@@ -136,6 +150,7 @@ const getMe = async (req, res) => {
     }
 
     res.json(rows[0]);
+
   } catch (error) {
     console.error('GetMe error:', error);
     res.status(500).json({
