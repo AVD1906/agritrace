@@ -205,5 +205,6 @@ FRONTEND_URL=http://localhost:3000
 
 ## Deployment
 
-- Backend → Railway (`npm start` as start command, env vars set in Railway dashboard)
+- Backend → Render
+- Database -> Hosted on [Aiven](https://aiven.io/) (managed MySQL cloud service).
 - Frontend → Vercel (set `REACT_APP_API_URL` to Railway backend URL)
