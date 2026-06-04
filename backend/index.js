@@ -38,7 +38,9 @@ io.on('connection', (socket) => {
   });
 });
 
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3000', process.env.FRONTEND_URL]
+}));
 app.use(express.json());
 
 app.get('/', (req, res) => {
