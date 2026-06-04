@@ -48,6 +48,11 @@ exports.createBatch = async (req, res) => {
       [batchId, location_id || null, req.user.user_id]
     );
 
+    await pool.query(
+      'INSERT INTO AuditLogs (user_id, action, details) VALUES (?, ?, ?)',
+      [req.user.user_id, 'Batch Created', `Batch ID: ${batchId}`]
+    );
+
     await notificationModel.createNotification(
       req.user.user_id,
       'New batch created'
