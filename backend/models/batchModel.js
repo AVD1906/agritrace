@@ -2,12 +2,12 @@ const pool = require('../config/db');
 
 // CREATE
 const createBatch = async (batch) => {
-  const { product_id, quantity, harvest_date, expiry_date, qr_code } = batch;
+  const { product_id, quantity, location_id, harvest_date, expiry_date, qr_code } = batch;
 
   const [result] = await pool.query(
-    `INSERT INTO Batches (product_id, quantity, harvest_date, expiry_date, status, qr_code)
-     VALUES (?, ?, ?, ?, 'Pending', ?)`,
-    [product_id, quantity, harvest_date, expiry_date, qr_code]
+    `INSERT INTO Batches (product_id, quantity, location_id, harvest_date, expiry_date, status, qr_code)
+     VALUES (?, ?, ?, ?, ?, 'Pending', ?)`,
+    [product_id, quantity, location_id, harvest_date, expiry_date, qr_code]
   );
 
   return result;
@@ -16,9 +16,10 @@ const createBatch = async (batch) => {
 // GET ALL
 const getAllBatches = async () => {
   const [rows] = await pool.query(
-    `SELECT b.*, p.product_name 
+    `SELECT b.*, p.product_name, l.name AS location_name
      FROM Batches b 
      LEFT JOIN Products p ON b.product_id = p.product_id
+     LEFT JOIN Locations l ON b.location_id = l.location_id
      ORDER BY b.batch_id DESC`
   );
   return rows;
