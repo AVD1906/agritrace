@@ -11,7 +11,7 @@ const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // 🔥 FULL ROLE MAP (matches your DB exactly)
+    //  FULL ROLE MAP (matches your DB exactly)
     const roleMap = {
       admin: 1,
       farmer: 2,
@@ -20,7 +20,7 @@ const register = async (req, res) => {
       retailer: 5,
     };
 
-    // 🔥 normalize role (important)
+    //  normalize role (important)
     const roleKey = role?.toLowerCase();
 
     const role_id = roleMap[roleKey];
