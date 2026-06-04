@@ -169,7 +169,6 @@ cd agritrace
 # 2. Backend
 cd backend
 npm install
-cp .env.example .env       # fill in your DB credentials + JWT secret
 node index.js              # runs on :5000
 
 # 3. Frontend (new terminal)
@@ -178,18 +177,7 @@ npm install
 npm start                  # runs on :3000
 ```
 
-**.env keys needed:**
-```
-DB_HOST=
-DB_USER=
-DB_PASSWORD=
-DB_NAME=
-PORT=5000
-JWT_SECRET=
-FRONTEND_URL=http://localhost:3000
-```
 
----
 
 ## Roles
 
