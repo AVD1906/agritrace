@@ -2,20 +2,26 @@ const pool = require('../config/db');
 
 // CREATE
 const createBatch = async (batch) => {
-  const { product_id, quantity, harvest_date, expiry_date } = batch;
+  const { product_id, quantity, harvest_date, expiry_date, qr_code } = batch;
 
   const [result] = await pool.query(
-    `INSERT INTO Batches (product_id, quantity, harvest_date, expiry_date, status)
-     VALUES (?, ?, ?, ?, 'Pending')`,
-    [product_id, quantity, harvest_date, expiry_date]
+    `INSERT INTO Batches (product_id, quantity, harvest_date, expiry_date, status, qr_code)
+     VALUES (?, ?, ?, ?, 'Pending', ?)`,
+    [product_id, quantity, harvest_date, expiry_date, qr_code]
   );
 
   return result;
 };
 
+
 // GET ALL
 const getAllBatches = async () => {
-  const [rows] = await pool.query(`SELECT * FROM Batches`);
+  const [rows] = await pool.query(
+    `SELECT b.*, p.product_name 
+     FROM Batches b 
+     LEFT JOIN Products p ON b.product_id = p.product_id
+     ORDER BY b.batch_id DESC`
+  );
   return rows;
 };
 
@@ -37,7 +43,7 @@ const getBatchById = async (id) => {
   return rows[0];
 };
 
-// 🔥 VERIFY
+// VERIFY
 const verifyBatch = async (id) => {
   await pool.query(
     `UPDATE Batches SET status = 'Verified' WHERE batch_id = ?`,
@@ -50,5 +56,5 @@ module.exports = {
   getAllBatches,
   getBatchesByProduct,
   getBatchById,
-  verifyBatch, // ✅ added
+  verifyBatch,
 };

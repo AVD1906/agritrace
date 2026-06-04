@@ -1,3 +1,5 @@
+const QRCode = require('qrcode');
+const pool = require('../config/db');
 const batchModel = require('../models/batchModel');
 const notificationModel = require('../models/notificationModel');
 
@@ -5,12 +7,10 @@ const notificationModel = require('../models/notificationModel');
 exports.createBatch = async (req, res) => {
   try {
     const { product_id, quantity, location_id, date } = req.body;
-
-    const harvest_date = date; // 🔥 map frontend → backend
+    const harvest_date = date;
 
     console.log("BODY:", req.body);
 
-    // 🔴 VALIDATIONS
     if (!product_id || !quantity || !harvest_date) {
       return res.status(400).json({
         message: 'product_id, quantity, and date are required',
@@ -29,9 +29,19 @@ exports.createBatch = async (req, res) => {
       location_id,
       harvest_date,
       status: "Pending",
+      qr_code: null,
     });
 
-    // 🔥 NOTIFICATION
+    const batchId = result.insertId;
+
+    const traceUrl = `${process.env.FRONTEND_URL}/trace/${batchId}`;
+    const qrCodeBase64 = await QRCode.toDataURL(traceUrl);
+
+    await pool.query(
+      `UPDATE Batches SET qr_code = ? WHERE batch_id = ?`,
+      [qrCodeBase64, batchId]
+    );
+
     await notificationModel.createNotification(
       req.user.user_id,
       'New batch created'
@@ -39,7 +49,8 @@ exports.createBatch = async (req, res) => {
 
     res.status(201).json({
       message: 'Batch created successfully',
-      batch_id: result.insertId,
+      batch_id: batchId,
+      qr_code: qrCodeBase64,
     });
 
   } catch (error) {
@@ -63,6 +74,14 @@ exports.getAllBatches = async (req, res) => {
 exports.verifyBatch = async (req, res) => {
   try {
     await batchModel.verifyBatch(req.params.id);
+
+    // emit real-time event
+    const io = req.app.get('io');
+    io.emit('batch:updated', {
+      batch_id: Number(req.params.id),
+      status: 'Verified',
+    });
+
     res.json({ message: 'Batch verified' });
   } catch (error) {
     console.error('verifyBatch error:', error);

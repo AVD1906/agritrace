@@ -7,14 +7,11 @@ const {
 } = require('../controllers/analyticsController');
 
 const authMiddleware = require('../middleware/authMiddleware');
+const checkRole = require('../middleware/checkRole');
 
-// Protect routes
 router.use(authMiddleware);
 
-// Product Trace Report
-router.get('/trace/:batch_id', getProductTrace);
-
-// User Activity Report
-router.get('/user-activity', getUserActivity);
+router.get('/trace/:batch_id', checkRole('Admin'), getProductTrace);
+router.get('/user-activity', checkRole('Admin'), getUserActivity);
 
 module.exports = router;

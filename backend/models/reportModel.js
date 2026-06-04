@@ -24,7 +24,32 @@ const getUserActivityReport = async () => {
   return rows;
 };
 
+const getSupplyChainSummary = async () => {
+  const [rows] = await pool.query(
+    `SELECT 
+        p.product_name,
+        COUNT(DISTINCT b.batch_id)        AS total_batches,
+        SUM(b.quantity)                   AS total_quantity,
+        COUNT(DISTINCT CASE WHEN b.status = 'Verified' THEN b.batch_id END) AS verified_batches,
+        COUNT(DISTINCT l.log_id)          AS total_log_events,
+        COUNT(DISTINCT c.cert_id)         AS total_certifications,
+        MAX(b.harvest_date)               AS latest_harvest,
+        ROUND(
+          COUNT(DISTINCT CASE WHEN b.status = 'Verified' THEN b.batch_id END) * 100.0
+          / NULLIF(COUNT(DISTINCT b.batch_id), 0), 1
+        )                                 AS verified_pct
+     FROM products p
+     LEFT JOIN batches b         ON p.product_id  = b.product_id
+     LEFT JOIN supplychainlogs l ON b.batch_id     = l.batch_id
+     LEFT JOIN certifications c  ON b.batch_id     = c.batch_id
+     GROUP BY p.product_id, p.product_name
+     ORDER BY total_batches DESC`
+  );
+  return rows;
+};
+
 module.exports = {
   getProductTraceReport,
   getUserActivityReport,
+  getSupplyChainSummary,
 };

@@ -17,3 +17,12 @@ exports.getUserActivity = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+exports.getSupplyChainSummary = async (req, res) => {
+  try {
+    const report = await reportModel.getSupplyChainSummary();
+    res.json(report);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
