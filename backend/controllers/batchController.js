@@ -42,6 +42,12 @@ exports.createBatch = async (req, res) => {
       [qrCodeBase64, batchId]
     );
 
+    await pool.query(
+      `INSERT INTO SupplyChainLogs (batch_id, location_id, user_id, stage, timestamp)
+       VALUES (?, ?, ?, 'Batch Created', NOW())`,
+      [batchId, location_id || null, req.user.user_id]
+    );
+
     await notificationModel.createNotification(
       req.user.user_id,
       'New batch created'
@@ -75,7 +81,6 @@ exports.verifyBatch = async (req, res) => {
   try {
     await batchModel.verifyBatch(req.params.id);
 
-    // emit real-time event
     const io = req.app.get('io');
     io.emit('batch:updated', {
       batch_id: Number(req.params.id),
