@@ -47,12 +47,18 @@ export default function Reports() {
   }, {});
   const pieData = Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
 
-  const logsByDay = logs.reduce((acc, log) => {
-    const day = new Date(log.timestamp).toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
-    acc[day] = (acc[day] || 0) + 1;
-    return acc;
-  }, {});
-  const lineData = Object.entries(logsByDay).map(([date, count]) => ({ date, count })).slice(-7);
+  const sevenDaysAgo = new Date();
+sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+const recentLogs7Days = logs.filter(log => new Date(log.timestamp) >= sevenDaysAgo);
+
+const logsByDay = recentLogs7Days.reduce((acc, log) => {
+  const day = new Date(log.timestamp).toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
+  acc[day] = (acc[day] || 0) + 1;
+  return acc;
+}, {});
+
+const lineData = Object.entries(logsByDay).map(([date, count]) => ({ date, count }));
 
   const productCounts = batches.reduce((acc, b) => {
     const name = b.product_name || "Unknown";
