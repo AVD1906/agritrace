@@ -13,13 +13,12 @@ const createBatch = async (batch) => {
   return result;
 };
 
-
+// GET ALL
 const getAllBatches = async () => {
   const [rows] = await pool.query(
-    `SELECT b.*, p.product_name, l.location_name
+    `SELECT b.*, p.product_name 
      FROM Batches b 
      LEFT JOIN Products p ON b.product_id = p.product_id
-     LEFT JOIN Locations l ON b.location_id = l.location_id
      ORDER BY b.batch_id DESC`
   );
   return rows;
