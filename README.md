@@ -208,3 +208,6 @@ FRONTEND_URL=http://localhost:3000
 - Backend → Render
 - Database -> Hosted on [Aiven](https://aiven.io/) (managed MySQL cloud service).
 - Frontend → Vercel (set `REACT_APP_API_URL` to Railway backend URL)
+
+- Frontend: https://agritrace-ebon.vercel.app/
+- Backend: https://agritrace-t6wn.onrender.com
