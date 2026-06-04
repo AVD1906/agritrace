@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
-const API = "http://localhost:5000/api";
+const API = (process.env.REACT_APP_API_URL || "http://localhost:5000") + "/api";
 
 export default function Layout({ children }) {
   const [notifOpen, setNotifOpen] = useState(false);

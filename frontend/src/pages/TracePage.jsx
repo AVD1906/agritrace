@@ -10,7 +10,7 @@ export default function TracePage() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/api/trace/${batchId}`)
+      .get(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/trace/${batchId}`)
       .then((res) => {
         setData(res.data);
         setLoading(false);

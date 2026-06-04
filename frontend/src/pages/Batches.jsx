@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getProducts, getLocations, createBatch } from "../api";
 
-const API = "http://localhost:5000/api";
+const API = (process.env.REACT_APP_API_URL || "http://localhost:5000") + "/api";
 
 const statusStyle = (status) => {
   if (status === "Verified") return { background: "#0d1f14", color: "#86efac" };

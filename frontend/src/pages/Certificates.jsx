@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const API = "http://localhost:5000/api";
+const API = (process.env.REACT_APP_API_URL || "http://localhost:5000") + "/api";
 
 export default function Certificates() {
   const [batchId, setBatchId] = useState("");
@@ -67,7 +67,7 @@ export default function Certificates() {
 
       setName("");
 
-      // 🔥 REAL FIX: reload from DB
+      //  REAL FIX: reload from DB
       await fetchCertificates();
 
     } catch (err) {

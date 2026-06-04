@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-const API = "http://localhost:5000/api";
+const API = (process.env.REACT_APP_API_URL || "http://localhost:5000") + "/api";
 
 export default function Audit() {
   const [logs, setLogs] = useState([]);
 
-  // 🔥 FETCH ALL LOGS (ADMIN)
+  //  FETCH ALL LOGS (ADMIN)
   const fetchLogs = async () => {
     try {
       const token = localStorage.getItem("token");

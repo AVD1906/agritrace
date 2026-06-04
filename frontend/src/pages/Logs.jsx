@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const API = "http://localhost:5000/api";
+const API = (process.env.REACT_APP_API_URL || "http://localhost:5000") + "/api";
 
 export default function Logs() {
   const [logs, setLogs] = useState([]);
@@ -11,7 +11,7 @@ export default function Logs() {
     action: "",
   });
 
-  // 🔥 FETCH LOGS
+  //  FETCH LOGS
   const fetchLogs = async () => {
     if (!batchId) return;
 
@@ -38,7 +38,7 @@ export default function Logs() {
     fetchLogs();
   }, [batchId]);
 
-  // 🔥 CREATE LOG
+  //  CREATE LOG
   const addLog = async () => {
     if (!form.batch_id || !form.action) {
       alert("Fill required fields");
@@ -124,7 +124,7 @@ export default function Logs() {
             
             <p className="font-semibold">{l.action}</p>
 
-            {/* ✅ THIS IS THE FIX */}
+            {/*  THIS IS THE FIX */}
             <p className="text-sm text-gray-300">
               {l.details} | User: {l.user_id}
             </p>

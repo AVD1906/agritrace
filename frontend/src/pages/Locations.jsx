@@ -9,7 +9,7 @@ export default function Locations() {
     address: "",
   });
 
-  // 🔥 FETCH LOCATIONS
+  //  FETCH LOCATIONS
   const fetchLocations = async () => {
     try {
       const data = await getLocations();
@@ -26,7 +26,7 @@ export default function Locations() {
     fetchLocations();
   }, []);
 
-  // 🔥 ADD LOCATION
+  // ADD LOCATION
   const addLocation = async () => {
     if (!form.name || !form.address) {
       alert("Name and address required");

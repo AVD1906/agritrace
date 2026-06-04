@@ -1,6 +1,6 @@
-const API = "http://localhost:5000/api";
+const API = (process.env.REACT_APP_API_URL || "http://localhost:5000") + "/api";
 
-// 🔥 Helper to get token
+// Helper to get token
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
 
@@ -26,7 +26,7 @@ export const createProduct = async (data) => {
     body: JSON.stringify(data),
   });
 
-  return res.json(); // 🔥 IMPORTANT
+  return res.json(); // IMPORTANT
 };
 
 // ================= LOCATIONS =================

@@ -5,7 +5,7 @@ import {
   BarChart, Bar,
 } from "recharts";
 
-const API = "http://localhost:5000/api";
+const API = (process.env.REACT_APP_API_URL || "http://localhost:5000") + "/api";
 const COLORS = ["#16a34a", "#f59e0b", "#dc2626", "#3b82f6"];
 
 export default function Reports() {

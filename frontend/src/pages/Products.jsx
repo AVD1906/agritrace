@@ -48,7 +48,7 @@ export default function Products() {
 
       setForm({ name: "", category: "" });
 
-      await fetchProducts(); // 🔥 refresh
+      await fetchProducts(); //  refresh
 
     } catch (err) {
       console.error("Error adding product:", err);
