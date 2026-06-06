@@ -195,7 +195,7 @@ npm start                  # runs on :3000
 
 - Backend → Render
 - Database -> Hosted on [Aiven](https://aiven.io/) (managed MySQL cloud service.An important thing is that it has to be powered on for the vercel link to work).
-- The reason for me to add the database on Aiven was to show to show how an website can run on a database which is mysql here.
+- The reason for me to add the database on Aiven was to show how an website can run on a database which is mysql here.
 - Frontend → Vercel (set `REACT_APP_API_URL` to Railway backend URL)
 
 - Frontend: https://agritrace-ebon.vercel.app/
