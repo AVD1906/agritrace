@@ -5,7 +5,7 @@ const createProduct = async (req, res) => {
   try {
     const { name, category } = req.body;
 
-    const farmer_id = req.user?.user_id; // 🔥 from token
+    const farmer_id = req.user?.user_id; 
 
     console.log("BODY:", req.body);
     console.log("USER:", req.user);
