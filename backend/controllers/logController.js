@@ -1,5 +1,5 @@
 const pool = require('../config/db');
-const notificationModel = require('../models/notificationModel'); // ✅ ADDED
+const notificationModel = require('../models/notificationModel'); 
 
 
 // ================= GET ALL LOGS (ADMIN) =================
