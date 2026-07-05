@@ -45,7 +45,7 @@ const createLog = async (req, res) => {
     console.log("BODY:", req.body);
     console.log("USER:", req.user);
 
-    // 🔴 VALIDATION
+   
     if (!batch_id || !action || !user_id) {
       return res.status(400).json({ message: 'Missing fields' });
     }
@@ -55,8 +55,8 @@ const createLog = async (req, res) => {
       [user_id, action, `Batch ID: ${batch_id}`]
     );
 
-    // 🔥 CREATE NOTIFICATION (FINAL ADD)
-    console.log("🔥 LOG CREATED - ADDING NOTIFICATION");
+   
+    console.log(" LOG CREATED - ADDING NOTIFICATION");
     await notificationModel.createNotification(
       user_id,
       `Log added: ${action}`
