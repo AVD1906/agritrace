@@ -2,7 +2,7 @@ const pool = require('../config/db');
 
 // ================= CREATE =================
 const createNotification = async (user_id, message) => {
-  console.log("📦 INSERTING NOTIFICATION:", user_id, message); // 🔥 DEBUG
+  console.log(" INSERTING NOTIFICATION:", user_id, message); 
 
   await pool.query(
     `INSERT INTO Notifications (user_id, message) VALUES (?, ?)`,
