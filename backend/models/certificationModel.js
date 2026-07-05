@@ -1,7 +1,7 @@
 const pool = require('../config/db');
 
 const addCertification = async ({ batch_id, name }) => {
-  const issued_by = name; // 🔥 map frontend → DB
+  const issued_by = name; 
   const issue_date = new Date();
   const status = "Valid";
 
